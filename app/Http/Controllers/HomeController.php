@@ -36,6 +36,11 @@ class HomeController extends Controller
         return view('chat');
     }
 
+    public function users()
+    {
+        return User::has('messages')->get();
+    }
+
     public function messages()
     {
         return Message::with('user')->get();

@@ -22,5 +22,6 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/operator/chat', [App\Http\Controllers\HomeController::class, 'chat'])->name('operator.chat');
+Route::get('/operator/users', [App\Http\Controllers\HomeController::class, 'users'])->name('operator.users');
 Route::get('/operator/messages', [App\Http\Controllers\HomeController::class, 'messages'])->name('operator.messages');
 Route::post('/operator/messages', [App\Http\Controllers\HomeController::class, 'messageStore'])->name('operator.message-store');

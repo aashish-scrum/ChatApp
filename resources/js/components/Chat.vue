@@ -4,10 +4,10 @@
 <template>
     <div class="chat-area">
         <!-- chatlist -->
-        <div class="chatlist">
+        <div class="chatlist p-0">
             <div class="modal-dialog-scrollable">
                 <div class="modal-content">
-                    <div class="chat-header">
+                    <div class="chat-header p-3">
                         <div class="msg-search">
                             <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search"
                                 aria-label="search">
@@ -16,7 +16,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-body mt-4 pt-3 border-top">
+                    <div class="modal-body mt-1 p-3 border-top">
                         <div class="chat-lists">
                             <div class="chat-list">
                                 <a href="javascript:void(0)" class="d-flex align-items-center">
@@ -24,24 +24,26 @@
                                         <img class="img-fluid"
                                             src="https://mehedihtml.com/chatbox/assets/img/user.png"
                                             alt="user img">
-                                        <span class="active"></span>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h3>Mehedi Hasan</h3>
-                                        <p>front end developer</p>
-                                    </div>
-                                </a>
-                                <a href="javascript:void(0)" class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <img class="img-fluid"
-                                            src="https://mehedihtml.com/chatbox/assets/img/user.png"
-                                            alt="user img">
+                                            <span class="active"></span>
                                     </div>
                                     <div class="flex-grow-1 ms-3">
                                         <h3>Ryhan</h3>
                                         <p>front end developer</p>
                                     </div>
                                 </a>
+                                <template v-for="contact in users">
+                                    <a href="javascript:void(0)" class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <img class="img-fluid"
+                                                src="https://mehedihtml.com/chatbox/assets/img/user.png"
+                                                alt="user img">
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h3>{{contact.name}}</h3>
+                                            <p>{{contact.email}}</p>
+                                        </div>
+                                    </a>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -70,23 +72,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="col-4">
-                                <ul class="moreoption">
-                                    <li class="navbar nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                                            data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"
-                                                aria-hidden="true"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
-                                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div> -->
                         </div>
                     </div>
                     <div class="scrollable modal-body" ref="hasScrolledToBottom">
@@ -98,7 +83,7 @@
                                         <span class="time">{{ message.created_at }}</span>
                                     </li>
                                     <li class="repaly" v-else>
-                                        <p><span>{{ message.user.name }} : </span>{{ message.message }}</p>
+                                        <p><span>You : </span>{{ message.message }}</p>
                                         <span class="time">{{ message.created_at }}</span>
                                     </li>
                                 </template>
@@ -127,11 +112,13 @@
 	export default{
 		props:['user'],
 	    setup(props){
+	    	let users = ref([])
+	    	let newUsers = ref('')
 	    	let messages = ref([])
 	    	let newMessage = ref('')
 	    	let hasScrolledToBottom = ref('')
 	    	onMounted(() =>{
-	    		fetchMessages()
+	    		fetchUsers()
 	    	})
 	    	onUpdated(() => {
 	    		scrollBottom()
@@ -144,6 +131,12 @@
                   created_at : e.message.created_at,
 	            });
 	        })
+	    	const fetchUsers = async()=> {
+	            axios.get('/operator/users').then(response => {
+	                users.value = response.data;
+                    console.log(response.data);
+	            });
+	        }
 	    	const fetchMessages = async()=> {
 	            axios.get('/operator/messages').then(response => {
 	                messages.value = response.data;
@@ -173,6 +166,7 @@
 	        	}        	
 	        }
 	        return {
+                users,
 	        	messages,
 	        	newMessage,
 	        	addMessage,
