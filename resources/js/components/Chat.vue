@@ -92,7 +92,6 @@
                             <button type="button" id="btn-chat" @click="addMessage"><i class="fa fa-paper-plane"
                                     aria-hidden="true"></i> Send</button>
                         </form>
-
                     </div>
                 </div>
             </div>
