@@ -25,3 +25,4 @@ Route::get('/operator/chat', [App\Http\Controllers\HomeController::class, 'chat'
 Route::get('/operator/users', [App\Http\Controllers\HomeController::class, 'users'])->name('operator.users');
 Route::get('/operator/messages', [App\Http\Controllers\HomeController::class, 'messages'])->name('operator.messages');
 Route::post('/operator/messages', [App\Http\Controllers\HomeController::class, 'messageStore'])->name('operator.message-store');
+Route::get('/operator/contact-messages/{id}', [App\Http\Controllers\HomeController::class, 'contactMessages'])->name('operator.contact-messages');

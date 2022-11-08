@@ -22739,7 +22739,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   props: ['user'],
   setup: function setup(props) {
     var users = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
-    var newUsers = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
+    var chatUser = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
     var messages = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
     var newMessage = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
     var hasScrolledToBottom = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)('');
@@ -22750,11 +22750,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       scrollBottom();
     });
     Echo["private"]('chat-channel').listen('SendMessage', function (e) {
-      messages.value.push({
-        message: e.message.message,
-        user: e.user,
-        created_at: e.message.created_at
-      });
+      console.log(e);
+      messages.value.push(e.message);
     });
     var fetchUsers = /*#__PURE__*/function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -22764,7 +22761,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 axios__WEBPACK_IMPORTED_MODULE_1___default().get('/operator/users').then(function (response) {
                   users.value = response.data;
-                  console.log(response.data);
                 });
               case 1:
               case "end":
@@ -22778,23 +22774,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       };
     }();
     var fetchMessages = /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(selectedUser) {
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                axios__WEBPACK_IMPORTED_MODULE_1___default().get('/operator/messages').then(function (response) {
-                  messages.value = response.data;
-                  console.log(response.data);
-                });
-              case 1:
+                document.querySelector('#chatBox').classList.remove('d-none');
+                // console.log(chatUser.value.id,selectedUser.id);
+                if (chatUser.value.id != selectedUser.id) {
+                  chatUser.value = selectedUser;
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().get('/operator/contact-messages/' + selectedUser.id).then(function (response) {
+                    messages.value = response.data;
+                    // console.log(response.data);
+                  });
+                }
+              case 2:
               case "end":
                 return _context2.stop();
             }
           }
         }, _callee2);
       }));
-      return function fetchMessages() {
+      return function fetchMessages(_x) {
         return _ref2.apply(this, arguments);
       };
     }();
@@ -22806,17 +22807,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context3.prev = _context3.next) {
               case 0:
                 user_message = {
-                  user: props.user,
+                  user: props.user.id,
+                  receiver: chatUser.value.id,
                   message: newMessage.value
                 };
                 axios__WEBPACK_IMPORTED_MODULE_1___default().post('/operator/messages', user_message).then(function (response) {
-                  var responseData = {
-                    user: props.user,
-                    message: response.data.message,
-                    created_at: response.data.created_at
-                  };
-                  messages.value.push(responseData);
-                  console.log(response.data);
+                  messages.value.push(response.data);
                 });
                 newMessage.value = '';
               case 3:
@@ -22839,6 +22835,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       users: users,
       messages: messages,
+      chatUser: chatUser,
       newMessage: newMessage,
       addMessage: addMessage,
       fetchMessages: fetchMessages,
@@ -22876,7 +22873,7 @@ var _hoisted_4 = {
 };
 var _hoisted_5 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"chat-header p-3\"><div class=\"msg-search\"><input type=\"text\" class=\"form-control\" id=\"inlineFormInputGroup\" placeholder=\"Search\" aria-label=\"search\"><a class=\"add\" href=\"#\"><img class=\"img-fluid\" src=\"https://mehedihtml.com/chatbox/assets/img/add.svg\" alt=\"add\"></a></div></div>", 1);
 var _hoisted_6 = {
-  "class": "modal-body mt-1 p-3 border-top"
+  "class": "modal-body mt-1 border-top"
 };
 var _hoisted_7 = {
   "class": "chat-lists"
@@ -22884,77 +22881,126 @@ var _hoisted_7 = {
 var _hoisted_8 = {
   "class": "chat-list"
 };
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<a href=\"javascript:void(0)\" class=\"d-flex align-items-center\"><div class=\"flex-shrink-0\"><img class=\"img-fluid\" src=\"https://mehedihtml.com/chatbox/assets/img/user.png\" alt=\"user img\"><span class=\"active\"></span></div><div class=\"flex-grow-1 ms-3\"><h3>Ryhan</h3><p>front end developer</p></div></a>", 1);
+var _hoisted_9 = ["onClick"];
 var _hoisted_10 = {
-  href: "javascript:void(0)",
-  "class": "d-flex align-items-center"
-};
-var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
   "class": "flex-shrink-0"
-}, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
-  "class": "img-fluid",
-  src: "https://mehedihtml.com/chatbox/assets/img/user.png",
-  alt: "user img"
-})], -1 /* HOISTED */);
-var _hoisted_12 = {
+};
+var _hoisted_11 = ["src"];
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", {
+  "class": "active"
+}, null, -1 /* HOISTED */);
+var _hoisted_13 = {
   "class": "flex-grow-1 ms-3"
 };
-var _hoisted_13 = {
+var _hoisted_14 = {
   "class": "chatbox"
 };
-var _hoisted_14 = {
+var _hoisted_15 = {
   "class": "modal-dialog-scrollable"
 };
-var _hoisted_15 = {
-  "class": "modal-content"
+var _hoisted_16 = {
+  "class": "modal-content d-none",
+  id: "chatBox"
 };
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createStaticVNode)("<div class=\"msg-head\"><div class=\"row\"><div class=\"col-8\"><div class=\"d-flex align-items-center\"><span class=\"chat-icon\"><img class=\"img-fluid\" src=\"https://mehedihtml.com/chatbox/assets/img/arroleftt.svg\" alt=\"image title\"></span><div class=\"flex-shrink-0\"><img class=\"img-fluid\" src=\"https://mehedihtml.com/chatbox/assets/img/user.png\" alt=\"user img\"></div><div class=\"flex-grow-1 ms-3\"><h3>Mehedi Hasan</h3><p>front end developer</p></div></div></div></div></div>", 1);
 var _hoisted_17 = {
+  "class": "msg-head"
+};
+var _hoisted_18 = {
+  "class": "row"
+};
+var _hoisted_19 = {
+  "class": "col-8"
+};
+var _hoisted_20 = {
+  "class": "d-flex align-items-center"
+};
+var _hoisted_21 = {
+  "class": "chat-icon"
+};
+var _hoisted_22 = ["src"];
+var _hoisted_23 = {
+  "class": "flex-shrink-0"
+};
+var _hoisted_24 = ["src"];
+var _hoisted_25 = {
+  "class": "flex-grow-1 ms-3"
+};
+var _hoisted_26 = {
   "class": "scrollable modal-body",
   ref: "hasScrolledToBottom"
 };
-var _hoisted_18 = {
+var _hoisted_27 = {
+  key: 0,
   "class": "msg-body"
 };
-var _hoisted_19 = {
+var _hoisted_28 = {
   "class": ""
 };
-var _hoisted_20 = {
+var _hoisted_29 = {
   key: 0,
   "class": "sender"
 };
-var _hoisted_21 = {
+var _hoisted_30 = {
   "class": ""
 };
-var _hoisted_22 = {
+var _hoisted_31 = {
   "class": "time"
 };
-var _hoisted_23 = {
+var _hoisted_32 = {
   key: 1,
   "class": "repaly"
 };
-var _hoisted_24 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "You : ", -1 /* HOISTED */);
-var _hoisted_25 = {
+var _hoisted_33 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", null, "You : ", -1 /* HOISTED */);
+var _hoisted_34 = {
   "class": "time"
 };
-var _hoisted_26 = {
+var _hoisted_35 = {
+  key: 1,
+  "class": "w-100 h-100 d-flex justify-content-center align-items-center"
+};
+var _hoisted_36 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Say Hi to ");
+var _hoisted_37 = {
+  style: {
+    "font-weight": "600"
+  }
+};
+var _hoisted_38 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" 👋");
+var _hoisted_39 = {
   "class": "send-box"
 };
-var _hoisted_27 = {
+var _hoisted_40 = {
   action: "javascript:void(0)"
 };
-var _hoisted_28 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+var _hoisted_41 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
   "class": "fa fa-paper-plane",
   "aria-hidden": "true"
 }, null, -1 /* HOISTED */);
-var _hoisted_29 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Send");
-var _hoisted_30 = [_hoisted_28, _hoisted_29];
+var _hoisted_42 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Send");
+var _hoisted_43 = [_hoisted_41, _hoisted_42];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatlist "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [_hoisted_9, ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.users, function (contact) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", _hoisted_10, [_hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_12, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(contact.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(contact.email), 1 /* TEXT */)])]);
-  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [_hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_19, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.messages, function (message) {
-    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [$props.user.id != message.user.id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_21, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.user.name) + " : ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_22, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.created_at), 1 /* TEXT */)])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_hoisted_24, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.created_at), 1 /* TEXT */)]))], 64 /* STABLE_FRAGMENT */);
-  }), 256 /* UNKEYED_FRAGMENT */))])])], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatlist "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, [_hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_8, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.users, function (contact) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("a", {
+      href: "javascript:void(0)",
+      "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["d-flex align-items-center px-3 py-2", contact.id == $setup.chatUser.id ? 'selected-user' : '']),
+      onClick: function onClick($event) {
+        return $setup.fetchMessages(contact);
+      }
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+      "class": "img-fluid",
+      src: contact.avatar,
+      alt: "user img"
+    }, null, 8 /* PROPS */, _hoisted_11), _hoisted_12]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(contact.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(contact.email), 1 /* TEXT */)])], 10 /* CLASS, PROPS */, _hoisted_9);
+  }), 256 /* UNKEYED_FRAGMENT */))])])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" chatbox "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_18, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_19, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_21, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+    "class": "img-fluid avatar",
+    src: $setup.chatUser.avatar,
+    alt: "image title"
+  }, null, 8 /* PROPS */, _hoisted_22)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_23, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
+    "class": "img-fluid avatar",
+    src: $setup.chatUser.avatar,
+    alt: "user img"
+  }, null, 8 /* PROPS */, _hoisted_24)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h3", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.chatUser.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.chatUser.email), 1 /* TEXT */)])])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [$setup.messages.length > 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_28, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.messages, function (message) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [$setup.chatUser.id == message.sender_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_29, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_30, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.sender.name) + " : ", 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" " + (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_31, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.created_at), 1 /* TEXT */)])) : $props.user.id == message.sender_id ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, [_hoisted_33, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_34, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.created_at), 1 /* TEXT */)])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 64 /* STABLE_FRAGMENT */);
+  }), 256 /* UNKEYED_FRAGMENT */))])])) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_35, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h5", null, [_hoisted_36, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("span", _hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($setup.chatUser.name), 1 /* TEXT */), _hoisted_38])]))], 512 /* NEED_PATCH */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "text",
     "class": "form-control",
     "aria-label": "message…",
@@ -22971,7 +23017,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onClick: _cache[2] || (_cache[2] = function () {
       return $setup.addMessage && $setup.addMessage.apply($setup, arguments);
     })
-  }, _hoisted_30)])])])])])]);
+  }, _hoisted_43)])])])])])]);
 }
 
 /***/ }),
@@ -28332,7 +28378,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* **********************************\r\nReset CSS\r\n************************************** */\r\n\r\nhtml,\r\nbody,\r\ndiv,\r\nspan,\r\napplet,\r\nobject,\r\niframe,\r\nh1,\r\nh2,\r\nh3,\r\nh4,\r\nh5,\r\nh6,\r\np,\r\nblockquote,\r\npre,\r\na,\r\nabbr,\r\nacronym,\r\naddress,\r\nbig,\r\ncite,\r\ncode,\r\ndel,\r\ndfn,\r\nem,\r\nimg,\r\nins,\r\nkbd,\r\nq,\r\ns,\r\nsamp,\r\nsmall,\r\nstrike,\r\nstrong,\r\nsub,\r\nsup,\r\ntt,\r\nvar,\r\nb,\r\nu,\r\ni,\r\ncenter,\r\ndl,\r\ndt,\r\ndd,\r\nol,\r\nul,\r\nli,\r\nfieldset,\r\nform,\r\nlabel,\r\nlegend,\r\ntable,\r\ncaption,\r\ntbody,\r\ntfoot,\r\nthead,\r\ntr,\r\nth,\r\ntd,\r\narticle,\r\naside,\r\ncanvas,\r\ndetails,\r\nembed,\r\nfigure,\r\nfigcaption,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\noutput,\r\nruby,\r\nsection,\r\nsummary,\r\ntime,\r\nmark,\r\naudio,\r\nvideo {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    font-size: 100%;\r\n    font: inherit;\r\n    vertical-align: baseline;\r\n}\r\n\r\n\r\n/* HTML5 display-role reset for older browsers */\r\n\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\nsection {\r\n    display: block;\r\n}\r\n\r\nbody {\r\n    line-height: 1.5;\r\n}\r\n\r\nol,\r\nul {\r\n    list-style: none;\r\n}\r\n\r\nblockquote,\r\nq {\r\n    quotes: none;\r\n}\r\n\r\nblockquote:before,\r\nblockquote:after,\r\nq:before,\r\nq:after {\r\n    content: '';\r\n    content: none;\r\n}\r\n\r\ntable {\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n}\r\n\r\n\r\n/********************************\r\n Typography Style\r\n******************************** */\r\n\r\nbody {\r\n    margin: 0;\r\n    font-family: 'Open Sans', sans-serif;\r\n    line-height: 1.5;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nhtml {\r\n    min-height: 100%;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nh1 {\r\n    font-size: 36px;\r\n}\r\n\r\nh2 {\r\n    font-size: 30px;\r\n}\r\n\r\nh3 {\r\n    font-size: 26px;\r\n}\r\n\r\nh4 {\r\n    font-size: 22px;\r\n}\r\n\r\nh5 {\r\n    font-size: 18px;\r\n}\r\n\r\nh6 {\r\n    font-size: 16px;\r\n}\r\n\r\np {\r\n    font-size: 15px;\r\n}\r\n\r\na {\r\n    text-decoration: none;\r\n    font-size: 15px;\r\n}\r\n\r\n* {\r\n  margin-bottom: 0;\r\n}\r\n\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar {\r\n    width: 4px;\r\n    border-radius: 3px;\r\n}\r\n\r\n/* Track */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {\r\n    background: #f1f1f1;\r\n}\r\n\r\n/* Handle */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {\r\n    background: #cacaca;\r\n}\r\n\r\n/* Handle on hover */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {\r\n    background: #aaaaaa;\r\n}\r\n\r\n/* *******************************\r\nmessage-area\r\n******************************** */\r\n\r\n.message-area {\r\n    height: 100vh;\r\n    overflow: hidden;\r\n    padding: 30px 0;\r\n    background: #f5f5f5;\r\n}\r\n\r\n.chat-area {\r\n    position: relative;\r\n    width: 100%;\r\n    background-color: #fff;\r\n    border-radius: 0.3rem;\r\n    height: 83vh;\r\n    overflow: hidden;\r\n    min-height: calc(100% - 1rem);\r\n}\r\n\r\n.chatlist {\r\n    outline: 0;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    width: 300px;\r\n    float: left;\r\n    padding: 15px;\r\n}\r\n\r\n.chat-area .modal-content {\r\n    border: none;\r\n    border-radius: 0;\r\n    outline: 0;\r\n    height: 100%;\r\n}\r\n\r\n.chat-area .modal-dialog-scrollable {\r\n    height: 100% !important;\r\n}\r\n\r\n.chatbox {\r\n    width: auto;\r\n    overflow: hidden;\r\n    height: 100%;\r\n    border-left: 1px solid #ccc;\r\n}\r\n\r\n.chatbox .modal-dialog,\r\n.chatlist .modal-dialog {\r\n    max-width: 100%;\r\n    margin: 0;\r\n}\r\n\r\n.msg-search {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.chat-area .form-control {\r\n    display: block;\r\n    width: 80%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.chat-area .form-control:focus {\r\n    outline: 0;\r\n    box-shadow: inherit;\r\n}\r\n\r\na.add img {\r\n    height: 36px;\r\n}\r\n\r\n.chat-area .nav-tabs {\r\n    border-bottom: 1px solid #dee2e6;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    flex-wrap: inherit;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item {\r\n    width: 100%;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link {\r\n    width: 100%;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-top: 5px;\r\n    margin-bottom: -1px;\r\n    background: 0 0;\r\n    border: 1px solid transparent;\r\n    border-top-left-radius: 0.25rem;\r\n    border-top-right-radius: 0.25rem;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item.show .nav-link,\r\n.chat-area .nav-tabs .nav-link.active {\r\n    color: #222;\r\n    background-color: #fff;\r\n    border-color: transparent transparent #000;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link:focus,\r\n.chat-area .nav-tabs .nav-link:hover {\r\n    border-color: transparent transparent #000;\r\n    isolation: isolate;\r\n}\r\n\r\n.chat-list h3 {\r\n    color: #222;\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list a.d-flex {\r\n    margin-bottom: 15px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n\r\n.chat-list .active {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    bottom: 3px;\r\n    left: 34px;\r\n    height: 12px;\r\n    width: 12px;\r\n    background: #00DB75;\r\n    border-radius: 50%;\r\n    border: 2px solid #fff;\r\n}\r\n\r\n.msg-head h3 {\r\n    color: #222;\r\n    font-size: 18px;\r\n    font-weight: 600;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head {\r\n    padding: 15px;\r\n    border-bottom: 1px solid #ccc;\r\n}\r\n\r\n.moreoption {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: end;\r\n}\r\n\r\n.moreoption .navbar {\r\n    padding: 0;\r\n}\r\n\r\n.moreoption li .nav-link {\r\n    color: #222;\r\n    font-size: 16px;\r\n}\r\n\r\n.moreoption .dropdown-toggle::after {\r\n    display: none;\r\n}\r\n\r\n.moreoption .dropdown-menu[data-bs-popper] {\r\n    top: 100%;\r\n    left: auto;\r\n    right: 0;\r\n    margin-top: 0.125rem;\r\n}\r\n\r\n.msg-body ul {\r\n    overflow: hidden;\r\n}\r\n\r\n.msg-body ul li {\r\n    list-style: none;\r\n    margin: 15px 0;\r\n}\r\n\r\n.msg-body ul li.sender {\r\n    display: block;\r\n    width: 100%;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.sender:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    top: -6px;\r\n    left: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #f5f5f5 transparent;\r\n    -webkit-transform: rotate(-37deg);\r\n    -ms-transform: rotate(-37deg);\r\n    transform: rotate(-37deg);\r\n}\r\n\r\n.msg-body ul li.sender p {\r\n    color: #000;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-left: 5px;\r\n    background: #f5f5f5;\r\n    display: inline-block;\r\n    border-bottom-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-right-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.sender p b {\r\n    display: block;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li p span {\r\n    font-weight: 600;\r\n}\r\n\r\n.msg-body ul li.repaly {\r\n    display: block;\r\n    width: 100%;\r\n    text-align: right;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.repaly:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    bottom: 15px;\r\n    right: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #82a2ef transparent;\r\n    -webkit-transform: rotate(37deg);\r\n    -ms-transform: rotate(37deg);\r\n    transform: rotate(37deg);\r\n}\r\n\r\n.msg-body ul li.repaly p {\r\n    color: #fff;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-right: 5px;\r\n    background: #82a2ef;\r\n    display: inline-block;\r\n    border-top-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-left-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.repaly p b {\r\n    display: block;\r\n    color: #061061;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li.repaly:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n}\r\n\r\n.time {\r\n    display: block;\r\n    color: #000;\r\n    margin-left: 15px;\r\n    font-size: 12px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n}\r\n\r\nli.repaly .time {\r\n    margin-right: 20px;\r\n}\r\n\r\n.divider {\r\n    position: relative;\r\n    z-index: 1;\r\n    text-align: center;\r\n}\r\n\r\n.msg-body h6 {\r\n    text-align: center;\r\n    font-weight: normal;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background: #fff;\r\n    display: inline-block;\r\n    padding: 0 5px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.divider:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 0;\r\n    border-top: 1px solid #EBEBEB;\r\n    width: 100%;\r\n    height: 100%;\r\n    z-index: -1;\r\n}\r\n\r\n.send-box {\r\n    padding: 15px;\r\n    border-top: 1px solid #ccc;\r\n}\r\n\r\n.send-box form {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.send-box .form-control {\r\n    display: block;\r\n    width: 85%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.send-box button {\r\n    border: none;\r\n    background: #3867d6;\r\n    padding: 0.375rem 5px;\r\n    color: #fff;\r\n    border-radius: 0.25rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    width: 24%;\r\n    margin-left: 1%;\r\n}\r\n\r\n.send-box button i {\r\n    margin-right: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper {\r\n    position: relative;\r\n    width: 125px;\r\n    height: auto;\r\n    text-align: left;\r\n    margin: 0 auto;\r\n    display: block;\r\n    background: #F6F7FA;\r\n    border-radius: 3px;\r\n    padding: 5px 15px;\r\n    float: left;\r\n    margin-right: 5px;\r\n    margin-bottom: 5px;\r\n    overflow: hidden;\r\n}\r\n\r\n.send-btns .button-wrapper span.label {\r\n    position: relative;\r\n    z-index: 1;\r\n    display: -webkit-box;\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -webkit-box-align: center;\r\n    -ms-flex-align: center;\r\n    align-items: center;\r\n    width: 100%;\r\n    cursor: pointer;\r\n    color: #343945;\r\n    font-weight: 400;\r\n    text-transform: capitalize;\r\n    font-size: 13px;\r\n}\r\n\r\n#upload {\r\n    display: inline-block;\r\n    position: absolute;\r\n    z-index: 1;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    opacity: 0;\r\n    cursor: pointer;\r\n}\r\n\r\n.send-btns .attach .form-control {\r\n    display: inline-block;\r\n    width: 120px;\r\n    height: auto;\r\n    padding: 5px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #343945;\r\n    background-color: #F6F7FA;\r\n    background-clip: padding-box;\r\n    border: 1px solid #F6F7FA;\r\n    border-radius: 3px;\r\n    margin-bottom: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper span.label img {\r\n    margin-right: 5px;\r\n}\r\n\r\n.button-wrapper {\r\n    position: relative;\r\n    width: 100px;\r\n    height: 100px;\r\n    text-align: center;\r\n    margin: 0 auto;\r\n}\r\n\r\nbutton:focus {\r\n    outline: 0;\r\n}\r\n\r\n.add-apoint {\r\n    display: inline-block;\r\n    margin-left: 5px;\r\n}\r\n\r\n.add-apoint a {\r\n    text-decoration: none;\r\n    background: #F6F7FA;\r\n    border-radius: 8px;\r\n    padding: 8px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.2;\r\n    color: #343945;\r\n}\r\n\r\n.add-apoint a svg {\r\n    margin-right: 5px;\r\n}\r\n\r\n.chat-icon {\r\n    display: none;\r\n}\r\n\r\n.closess i {\r\n    display: none;\r\n}\r\n\r\n\r\n\r\n@media (max-width: 767px) {\r\n    .chat-icon {\r\n        display: block;\r\n        margin-right: 5px;\r\n    }\r\n    .chatlist {\r\n        width: 100%;\r\n    }\r\n    .chatbox {\r\n        width: 100%;\r\n        position: absolute;\r\n        left: 1000px;\r\n        right: 0;\r\n        background: #fff;\r\n        transition: all 0.5s ease;\r\n        border-left: none;\r\n    }\r\n    .showbox {\r\n        left: 0 !important;\r\n        transition: all 0.5s ease;\r\n    }\r\n    .msg-head h3 {\r\n        font-size: 14px;\r\n    }\r\n    .msg-head p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-head .flex-shrink-0 img {\r\n        height: 30px;\r\n    }\r\n    .send-box button {\r\n        width: 28%;\r\n    }\r\n    .send-box .form-control {\r\n        width: 70%;\r\n    }\r\n    .chat-list h3 {\r\n        font-size: 14px;\r\n    }\r\n    .chat-list p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-body ul li.sender p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-bottom-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-right-radius: 6px;\r\n    }\r\n    .msg-body ul li.repaly p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-top-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-left-radius: 6px;\r\n    }\r\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* **********************************\r\nReset CSS\r\n************************************** */\r\n\r\nhtml,\r\nbody,\r\ndiv,\r\nspan,\r\napplet,\r\nobject,\r\niframe,\r\nh1,\r\nh2,\r\nh3,\r\nh4,\r\nh5,\r\nh6,\r\np,\r\nblockquote,\r\npre,\r\na,\r\nabbr,\r\nacronym,\r\naddress,\r\nbig,\r\ncite,\r\ncode,\r\ndel,\r\ndfn,\r\nem,\r\nimg,\r\nins,\r\nkbd,\r\nq,\r\ns,\r\nsamp,\r\nsmall,\r\nstrike,\r\nstrong,\r\nsub,\r\nsup,\r\ntt,\r\nvar,\r\nb,\r\nu,\r\ni,\r\ncenter,\r\ndl,\r\ndt,\r\ndd,\r\nol,\r\nul,\r\nli,\r\nfieldset,\r\nform,\r\nlabel,\r\nlegend,\r\ntable,\r\ncaption,\r\ntbody,\r\ntfoot,\r\nthead,\r\ntr,\r\nth,\r\ntd,\r\narticle,\r\naside,\r\ncanvas,\r\ndetails,\r\nembed,\r\nfigure,\r\nfigcaption,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\noutput,\r\nruby,\r\nsection,\r\nsummary,\r\ntime,\r\nmark,\r\naudio,\r\nvideo {\r\n    margin: 0;\r\n    padding: 0;\r\n    border: 0;\r\n    font-size: 100%;\r\n    font: inherit;\r\n    vertical-align: baseline;\r\n}\r\n\r\n\r\n/* HTML5 display-role reset for older browsers */\r\n\r\narticle,\r\naside,\r\ndetails,\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nhgroup,\r\nmenu,\r\nnav,\r\nsection {\r\n    display: block;\r\n}\r\n\r\nbody {\r\n    line-height: 1.5;\r\n}\r\n\r\nol,\r\nul {\r\n    list-style: none;\r\n}\r\n\r\nblockquote,\r\nq {\r\n    quotes: none;\r\n}\r\n\r\nblockquote:before,\r\nblockquote:after,\r\nq:before,\r\nq:after {\r\n    content: '';\r\n    content: none;\r\n}\r\n\r\ntable {\r\n    border-collapse: collapse;\r\n    border-spacing: 0;\r\n}\r\n\r\n\r\n/********************************\r\n Typography Style\r\n******************************** */\r\n\r\nbody {\r\n    margin: 0;\r\n    font-family: 'Open Sans', sans-serif;\r\n    line-height: 1.5;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nhtml {\r\n    min-height: 100%;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n}\r\n\r\nh1 {\r\n    font-size: 36px;\r\n}\r\n\r\nh2 {\r\n    font-size: 30px;\r\n}\r\n\r\nh3 {\r\n    font-size: 26px;\r\n}\r\n\r\nh4 {\r\n    font-size: 22px;\r\n}\r\n\r\nh5 {\r\n    font-size: 18px;\r\n}\r\n\r\nh6 {\r\n    font-size: 16px;\r\n}\r\n\r\np {\r\n    font-size: 15px;\r\n}\r\n\r\na {\r\n    text-decoration: none;\r\n    font-size: 15px;\r\n}\r\n\r\n* {\r\n  margin-bottom: 0;\r\n}\r\n\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar {\r\n    width: 4px;\r\n    border-radius: 3px;\r\n}\r\n\r\n/* Track */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {\r\n    background: #f1f1f1;\r\n}\r\n\r\n/* Handle */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {\r\n    background: #cacaca;\r\n}\r\n\r\n/* Handle on hover */\r\n.modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {\r\n    background: #aaaaaa;\r\n}\r\n\r\n/* *******************************\r\nmessage-area\r\n******************************** */\r\n\r\n.message-area {\r\n    height: 100vh;\r\n    overflow: hidden;\r\n    padding: 30px 0;\r\n    background: #f5f5f5;\r\n}\r\n\r\n.chat-area {\r\n    position: relative;\r\n    width: 100%;\r\n    background-color: #fff;\r\n    border-radius: 0.3rem;\r\n    height: 83vh;\r\n    overflow: hidden;\r\n    min-height: calc(100% - 1rem);\r\n}\r\n\r\n.chatlist {\r\n    outline: 0;\r\n    height: 100%;\r\n    overflow: hidden;\r\n    width: 300px;\r\n    float: left;\r\n    padding: 15px;\r\n}\r\n.chatlist a img, .msg-head img.avatar {\r\n    width: 50px;\r\n    height: 50px;\r\n    border-radius: 25px;\r\n}\r\n\r\n.chat-area .modal-content {\r\n    border: none;\r\n    border-radius: 0;\r\n    outline: 0;\r\n    height: 100%;\r\n}\r\n\r\n.chat-area .modal-dialog-scrollable {\r\n    height: 100% !important;\r\n}\r\n\r\n.chatbox {\r\n    width: auto;\r\n    overflow: hidden;\r\n    height: 100%;\r\n    border-left: 1px solid #ccc;\r\n}\r\n\r\n.chatbox .modal-dialog,\r\n.chatlist .modal-dialog {\r\n    max-width: 100%;\r\n    margin: 0;\r\n}\r\n\r\n.msg-search {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.chat-area .form-control {\r\n    display: block;\r\n    width: 80%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.chat-area .form-control:focus {\r\n    outline: 0;\r\n    box-shadow: inherit;\r\n}\r\n\r\na.add img {\r\n    height: 36px;\r\n}\r\n\r\n.chat-area .nav-tabs {\r\n    border-bottom: 1px solid #dee2e6;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    flex-wrap: inherit;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item {\r\n    width: 100%;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link {\r\n    width: 100%;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-top: 5px;\r\n    margin-bottom: -1px;\r\n    background: 0 0;\r\n    border: 1px solid transparent;\r\n    border-top-left-radius: 0.25rem;\r\n    border-top-right-radius: 0.25rem;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-item.show .nav-link,\r\n.chat-area .nav-tabs .nav-link.active {\r\n    color: #222;\r\n    background-color: #fff;\r\n    border-color: transparent transparent #000;\r\n}\r\n\r\n.chat-area .nav-tabs .nav-link:focus,\r\n.chat-area .nav-tabs .nav-link:hover {\r\n    border-color: transparent transparent #000;\r\n    isolation: isolate;\r\n}\r\n\r\n.chat-list h3 {\r\n    color: #222;\r\n    font-size: 16px;\r\n    font-weight: 500;\r\n    line-height: 1.5;\r\n    text-transform: capitalize;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.chat-list a.d-flex {\r\n    margin: 0px 2px 2px 2px;\r\n    position: relative;\r\n    text-decoration: none;\r\n}\r\n.chat-list a.selected-user{\r\n    background-color: #a23dff;\r\n    border-radius: 10px;\r\n}\r\n.chat-list a.selected-user h3{\r\n    color: #f6f6f6;\r\n    font-weight: 600;\r\n}\r\n.chat-list a.selected-user p{\r\n    color: #e6e6e6;\r\n}\r\n\r\n.chat-list .active {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    bottom: 12px;\r\n    left: 49px;\r\n    height: 12px;\r\n    width: 12px;\r\n    background: #00DB75;\r\n    border-radius: 50%;\r\n    border: 2px solid #fff;\r\n}\r\n\r\n.msg-head h3 {\r\n    color: #222;\r\n    font-size: 18px;\r\n    font-weight: 600;\r\n    text-transform: capitalize;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head p {\r\n    color: #343434;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-head {\r\n    padding: 15px;\r\n    border-bottom: 1px solid #ccc;\r\n}\r\n\r\n.moreoption {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: end;\r\n}\r\n\r\n.moreoption .navbar {\r\n    padding: 0;\r\n}\r\n\r\n.moreoption li .nav-link {\r\n    color: #222;\r\n    font-size: 16px;\r\n}\r\n\r\n.moreoption .dropdown-toggle::after {\r\n    display: none;\r\n}\r\n\r\n.moreoption .dropdown-menu[data-bs-popper] {\r\n    top: 100%;\r\n    left: auto;\r\n    right: 0;\r\n    margin-top: 0.125rem;\r\n}\r\n\r\n.msg-body ul {\r\n    overflow: hidden;\r\n}\r\n\r\n.msg-body ul li {\r\n    list-style: none;\r\n    margin: 15px 0;\r\n}\r\n\r\n.msg-body ul li.sender {\r\n    display: block;\r\n    width: 100%;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.sender:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    top: -6px;\r\n    left: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #f5f5f5 transparent;\r\n    -webkit-transform: rotate(-37deg);\r\n    -ms-transform: rotate(-37deg);\r\n    transform: rotate(-37deg);\r\n}\r\n\r\n.msg-body ul li.sender p {\r\n    color: #000;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-left: 5px;\r\n    background: #f5f5f5;\r\n    display: inline-block;\r\n    border-bottom-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-right-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.sender p b {\r\n    display: block;\r\n    color: #180660;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li p span {\r\n    font-weight: 600;\r\n}\r\n\r\n.msg-body ul li.repaly {\r\n    display: block;\r\n    width: 100%;\r\n    text-align: right;\r\n    position: relative;\r\n}\r\n\r\n.msg-body ul li.repaly:before {\r\n    display: block;\r\n    clear: both;\r\n    content: '';\r\n    position: absolute;\r\n    bottom: 15px;\r\n    right: -2px;\r\n    width: 0;\r\n    height: 0;\r\n    border-style: solid;\r\n    border-width: 0 12px 15px 12px;\r\n    border-color: transparent transparent #82a2ef transparent;\r\n    -webkit-transform: rotate(37deg);\r\n    -ms-transform: rotate(37deg);\r\n    transform: rotate(37deg);\r\n}\r\n\r\n.msg-body ul li.repaly p {\r\n    color: #fff;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n    padding: 15px;\r\n    margin-right: 5px;\r\n    background: #82a2ef;\r\n    display: inline-block;\r\n    border-top-left-radius: 10px;\r\n    border-top-right-radius: 10px;\r\n    border-bottom-left-radius: 10px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.msg-body ul li.repaly p b {\r\n    display: block;\r\n    color: #061061;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    font-weight: 500;\r\n}\r\n\r\n.msg-body ul li.repaly:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n}\r\n\r\n.time {\r\n    display: block;\r\n    color: #000;\r\n    margin-left: 15px;\r\n    font-size: 12px;\r\n    line-height: 1.5;\r\n    font-weight: 400;\r\n}\r\n\r\nli.repaly .time {\r\n    margin-right: 20px;\r\n}\r\n\r\n.divider {\r\n    position: relative;\r\n    z-index: 1;\r\n    text-align: center;\r\n}\r\n\r\n.msg-body h6 {\r\n    text-align: center;\r\n    font-weight: normal;\r\n    font-size: 14px;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background: #fff;\r\n    display: inline-block;\r\n    padding: 0 5px;\r\n    margin-bottom: 0;\r\n}\r\n\r\n.divider:after {\r\n    display: block;\r\n    content: '';\r\n    clear: both;\r\n    position: absolute;\r\n    top: 12px;\r\n    left: 0;\r\n    border-top: 1px solid #EBEBEB;\r\n    width: 100%;\r\n    height: 100%;\r\n    z-index: -1;\r\n}\r\n\r\n.send-box {\r\n    padding: 15px;\r\n    border-top: 1px solid #ccc;\r\n}\r\n\r\n.send-box form {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n\r\n.send-box .form-control {\r\n    display: block;\r\n    width: 85%;\r\n    padding: 0.375rem 0.75rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #222;\r\n    background-color: #fff;\r\n    background-clip: padding-box;\r\n    border: 1px solid #ccc;\r\n    -webkit-appearance: none;\r\n    -moz-appearance: none;\r\n    appearance: none;\r\n    border-radius: 0.25rem;\r\n    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;\r\n}\r\n\r\n.send-box button {\r\n    border: none;\r\n    background: #3867d6;\r\n    padding: 0.375rem 5px;\r\n    color: #fff;\r\n    border-radius: 0.25rem;\r\n    font-size: 14px;\r\n    font-weight: 400;\r\n    width: 24%;\r\n    margin-left: 1%;\r\n}\r\n\r\n.send-box button i {\r\n    margin-right: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper {\r\n    position: relative;\r\n    width: 125px;\r\n    height: auto;\r\n    text-align: left;\r\n    margin: 0 auto;\r\n    display: block;\r\n    background: #F6F7FA;\r\n    border-radius: 3px;\r\n    padding: 5px 15px;\r\n    float: left;\r\n    margin-right: 5px;\r\n    margin-bottom: 5px;\r\n    overflow: hidden;\r\n}\r\n\r\n.send-btns .button-wrapper span.label {\r\n    position: relative;\r\n    z-index: 1;\r\n    display: -webkit-box;\r\n    display: -ms-flexbox;\r\n    display: flex;\r\n    -webkit-box-align: center;\r\n    -ms-flex-align: center;\r\n    align-items: center;\r\n    width: 100%;\r\n    cursor: pointer;\r\n    color: #343945;\r\n    font-weight: 400;\r\n    text-transform: capitalize;\r\n    font-size: 13px;\r\n}\r\n\r\n#upload {\r\n    display: inline-block;\r\n    position: absolute;\r\n    z-index: 1;\r\n    width: 100%;\r\n    height: 100%;\r\n    top: 0;\r\n    left: 0;\r\n    opacity: 0;\r\n    cursor: pointer;\r\n}\r\n\r\n.send-btns .attach .form-control {\r\n    display: inline-block;\r\n    width: 120px;\r\n    height: auto;\r\n    padding: 5px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.5;\r\n    color: #343945;\r\n    background-color: #F6F7FA;\r\n    background-clip: padding-box;\r\n    border: 1px solid #F6F7FA;\r\n    border-radius: 3px;\r\n    margin-bottom: 5px;\r\n}\r\n\r\n.send-btns .button-wrapper span.label img {\r\n    margin-right: 5px;\r\n}\r\n\r\n.button-wrapper {\r\n    position: relative;\r\n    width: 100px;\r\n    height: 100px;\r\n    text-align: center;\r\n    margin: 0 auto;\r\n}\r\n\r\nbutton:focus {\r\n    outline: 0;\r\n}\r\n\r\n.add-apoint {\r\n    display: inline-block;\r\n    margin-left: 5px;\r\n}\r\n\r\n.add-apoint a {\r\n    text-decoration: none;\r\n    background: #F6F7FA;\r\n    border-radius: 8px;\r\n    padding: 8px 8px;\r\n    font-size: 13px;\r\n    font-weight: 400;\r\n    line-height: 1.2;\r\n    color: #343945;\r\n}\r\n\r\n.add-apoint a svg {\r\n    margin-right: 5px;\r\n}\r\n\r\n.chat-icon {\r\n    display: none;\r\n}\r\n\r\n.closess i {\r\n    display: none;\r\n}\r\n\r\n\r\n\r\n@media (max-width: 767px) {\r\n    .chat-icon {\r\n        display: block;\r\n        margin-right: 5px;\r\n    }\r\n    .chatlist {\r\n        width: 100%;\r\n    }\r\n    .chatbox {\r\n        width: 100%;\r\n        position: absolute;\r\n        left: 1000px;\r\n        right: 0;\r\n        background: #fff;\r\n        transition: all 0.5s ease;\r\n        border-left: none;\r\n    }\r\n    .showbox {\r\n        left: 0 !important;\r\n        transition: all 0.5s ease;\r\n    }\r\n    .msg-head h3 {\r\n        text-transform: capitalize;\r\n        font-size: 14px;\r\n    }\r\n    .msg-head p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-head .flex-shrink-0 img {\r\n        height: 30px;\r\n    }\r\n    .send-box button {\r\n        width: 28%;\r\n    }\r\n    .send-box .form-control {\r\n        width: 70%;\r\n    }\r\n    .chat-list h3 {\r\n        font-size: 14px;\r\n    }\r\n    .chat-list p {\r\n        font-size: 12px;\r\n    }\r\n    .msg-body ul li.sender p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-bottom-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-right-radius: 6px;\r\n    }\r\n    .msg-body ul li.repaly p {\r\n        font-size: 13px;\r\n        padding: 8px;\r\n        border-top-left-radius: 6px;\r\n        border-top-right-radius: 6px;\r\n        border-bottom-left-radius: 6px;\r\n    }\r\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

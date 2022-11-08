@@ -2,19 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\Messaging;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
-    use HasFactory;
+    use HasFactory, Messaging;
 
-    protected $fillable = ['user_id','message'];
-
-    public function getCreatedAtAttribute($value)
-    {
-        return $this->created_at = date('D, h:iA',strtotime($value));
-    }
+    protected $fillable = ['receiver_id','sender_id','message'];
 
     public function user(){
         return $this->belongsTo(User::class);

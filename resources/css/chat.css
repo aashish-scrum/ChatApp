@@ -240,6 +240,11 @@ message-area
     float: left;
     padding: 15px;
 }
+.chatlist a img, .msg-head img.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+}
 
 .chat-area .modal-content {
     border: none;
@@ -351,14 +356,24 @@ a.add img {
     font-size: 14px;
     font-weight: 400;
     line-height: 1.5;
-    text-transform: capitalize;
     margin-bottom: 0;
 }
 
 .chat-list a.d-flex {
-    margin-bottom: 15px;
+    margin: 0px 2px 2px 2px;
     position: relative;
     text-decoration: none;
+}
+.chat-list a.selected-user{
+    background-color: #a23dff;
+    border-radius: 10px;
+}
+.chat-list a.selected-user h3{
+    color: #f6f6f6;
+    font-weight: 600;
+}
+.chat-list a.selected-user p{
+    color: #e6e6e6;
 }
 
 .chat-list .active {
@@ -366,8 +381,8 @@ a.add img {
     content: '';
     clear: both;
     position: absolute;
-    bottom: 3px;
-    left: 34px;
+    bottom: 12px;
+    left: 49px;
     height: 12px;
     width: 12px;
     background: #00DB75;
@@ -379,6 +394,7 @@ a.add img {
     color: #222;
     font-size: 18px;
     font-weight: 600;
+    text-transform: capitalize;
     line-height: 1.5;
     margin-bottom: 0;
 }
@@ -388,7 +404,6 @@ a.add img {
     font-size: 14px;
     font-weight: 400;
     line-height: 1.5;
-    text-transform: capitalize;
     margin-bottom: 0;
 }
 
@@ -753,6 +768,7 @@ button:focus {
         transition: all 0.5s ease;
     }
     .msg-head h3 {
+        text-transform: capitalize;
         font-size: 14px;
     }
     .msg-head p {

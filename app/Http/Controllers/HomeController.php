@@ -38,7 +38,8 @@ class HomeController extends Controller
 
     public function users()
     {
-        return User::has('messages')->get();
+        //    return User::has('messages')->where('id','!=',auth('web')->id())->get();
+        return User::where('id', '!=', auth('web')->id())->get();
     }
 
     public function messages()
@@ -46,15 +47,21 @@ class HomeController extends Controller
         return Message::with('user')->get();
     }
 
+    public function contactMessages($receiver)
+    {
+        return Message::with('receiver', 'sender')->where('sender_id', auth('web')->id())->where('receiver_id', $receiver)->orWhere('sender_id', $receiver)->where('receiver_id', auth('web')->id())->get();
+    }
+
     public function messageStore(Request $request)
     {
         $user = User::find(Auth::id());
-
-        $messages = $user->messages()->create([
+        $messages = Message::create([
+            'receiver_id' => $request->receiver,
+            'sender_id' => $request->user,
             'message' => $request->message,
         ]);
-
-        broadcast(new SendMessage($user,$messages))->toOthers();
+        $messages = Message::with('receiver', 'sender')->find($messages->id);
+        broadcast(new SendMessage($messages))->toOthers();
 
         return response()->json($messages);
     }
