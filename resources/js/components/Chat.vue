@@ -53,8 +53,7 @@
                                                 v-bind:src="chatUser.avatar"
                                                 alt="image title"></span>
                                         <div class="flex-shrink-0">
-                                            <img class="img-fluid avatar"
-                                                v-bind:src="chatUser.avatar" alt="user img">
+                                            <img class="img-fluid avatar" v-bind:src="chatUser.avatar" alt="user img">
                                         </div>
                                         <div class="flex-grow-1 ms-3">
                                             <h3>{{ chatUser.name }}</h3>
@@ -86,6 +85,8 @@
 
                     <div class="send-box">
                         <form action="javascript:void(0)">
+                            <!-- <EmojiPicker :native="true" @select="onSelectEmoji" /> -->
+                            <a type="button" class="p-2">😀</a>
                             <input type="text" class="form-control" aria-label="message…" placeholder="Write message…"
                                 v-model="newMessage" @keyup.enter="addMessage">
 
@@ -137,6 +138,9 @@ export default {
                 });
             }
         }
+        const onSelectEmoji = async (emoji) => {
+            newMessage.value += emoji.i;
+        }
         const addMessage = async () => {
             let user_message = {
                 user: props.user.id,
@@ -161,6 +165,7 @@ export default {
             newMessage,
             addMessage,
             fetchMessages,
+            onSelectEmoji,
             hasScrolledToBottom
         }
     }
