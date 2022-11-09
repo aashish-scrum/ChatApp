@@ -464,20 +464,20 @@ a.add img {
     height: 0;
     border-style: solid;
     border-width: 0 12px 15px 12px;
-    border-color: transparent transparent #f5f5f5 transparent;
+    border-color: transparent transparent #a23dff transparent;
     -webkit-transform: rotate(-37deg);
     -ms-transform: rotate(-37deg);
     transform: rotate(-37deg);
 }
 
 .msg-body ul li.sender p {
-    color: #000;
+    color: #f5f5f5;
     font-size: 14px;
     line-height: 1.5;
     font-weight: 400;
     padding: 15px;
     margin-left: 5px;
-    background: #f5f5f5;
+    background: #a23dff;
     display: inline-block;
     border-bottom-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -515,20 +515,20 @@ a.add img {
     height: 0;
     border-style: solid;
     border-width: 0 12px 15px 12px;
-    border-color: transparent transparent #82a2ef transparent;
+    border-color: transparent transparent #f5f5f5 transparent;
     -webkit-transform: rotate(37deg);
     -ms-transform: rotate(37deg);
     transform: rotate(37deg);
 }
 
 .msg-body ul li.repaly p {
-    color: #fff;
+    color: #333;
     font-size: 14px;
     line-height: 1.5;
     font-weight: 400;
     padding: 15px;
     margin-right: 5px;
-    background: #82a2ef;
+    background: #f5f5f5;
     display: inline-block;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -625,7 +625,7 @@ li.repaly .time {
 
 .send-box button {
     border: none;
-    background: #3867d6;
+    background: #a23dff;
     padding: 0.375rem 5px;
     color: #fff;
     border-radius: 0.25rem;

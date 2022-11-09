@@ -1,5 +1,19 @@
 <style>
 @import '../../css/chat.css';
+.v3-emoji-picker{
+    position: absolute;
+    text-align: left;
+    bottom: 85%;
+    left: 2%;
+}
+.v3-emoji-picker .v3-footer{
+    display: none;
+}
+.unread-badge{
+    font-size: 11px;
+    border-radius: 25px;
+    padding: 3px 5px;
+}
 </style>
 <template>
     <div class="chat-area">
@@ -32,6 +46,7 @@
                                             <h3>{{ contact.name }}</h3>
                                             <p>{{ contact.email }}</p>
                                         </div>
+                                        <span class="badge text-bg-danger unread-badge">4</span>
                                     </a>
                                 </template>
                             </div>
@@ -83,10 +98,10 @@
                         </div>
                     </div>
 
-                    <div class="send-box">
+                    <div class="send-box position-relative">
                         <form action="javascript:void(0)">
-                            <!-- <EmojiPicker :native="true" @select="onSelectEmoji" /> -->
-                            <a type="button" class="p-2">😀</a>
+                            <EmojiPicker :display-recent="true" :disableSkinTones="false" @select="onSelectEmoji" class="d-none" />
+                            <a tabindex="0" class="p-2" role="button" @click="showEmoji" >😀</a>
                             <input type="text" class="form-control" aria-label="message…" placeholder="Write message…"
                                 v-model="newMessage" @keyup.enter="addMessage">
 
@@ -103,6 +118,9 @@
 <script>
 import { reactive, inject, ref, onMounted, onUpdated } from 'vue';
 import axios from 'axios';
+import "bootstrap/dist/js/bootstrap.min.js";
+import { Popover } from 'bootstrap/dist/js/bootstrap.esm.min.js'
+
 export default {
     props: ['user'],
     setup(props) {
@@ -112,6 +130,10 @@ export default {
         let newMessage = ref('')
         let hasScrolledToBottom = ref('')
         onMounted(() => {
+            Array.from(document.querySelectorAll('button[data-bs-toggle="popover"],a[data-bs-toggle="popover"]'))
+                .forEach(popoverNode => new Popover(popoverNode,{
+                    trigger : 'focus body',
+                }))
             fetchUsers()
         })
         onUpdated(() => {
@@ -141,6 +163,9 @@ export default {
         const onSelectEmoji = async (emoji) => {
             newMessage.value += emoji.i;
         }
+        function showEmoji() {
+            document.querySelector('.v3-emoji-picker').classList.toggle('d-none');
+        }
         const addMessage = async () => {
             let user_message = {
                 user: props.user.id,
@@ -165,6 +190,7 @@ export default {
             newMessage,
             addMessage,
             fetchMessages,
+            showEmoji,
             onSelectEmoji,
             hasScrolledToBottom
         }
