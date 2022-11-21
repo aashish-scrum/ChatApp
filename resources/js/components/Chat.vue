@@ -46,7 +46,7 @@
                                             <h3>{{ contact.name }}</h3>
                                             <p>{{ contact.email }}</p>
                                         </div>
-                                        <span class="badge text-bg-danger unread-badge">4</span>
+                                        <span class="badge text-bg-danger unread-badge" v-if="contact.unread_messages_count > 0">{{contact.unread_messages_count}}</span>
                                     </a>
                                 </template>
                             </div>
@@ -141,22 +141,31 @@ export default {
         })
         Echo.private('chat-channel')
             .listen('SendMessage', (e) => {
-                console.log(e);
                 messages.value.push(e.message);
+                console.log(props.user,users.value,chatUser.value,e.message);
+                if(e.message.sender_id != chatUser.value.id && e.message.receiver_id == props.user.id && e.message.read == 0){
+                    let i = users.value.map(item => item.id).indexOf(e.message.sender_id) // find index of your object
+                    users.value.splice(i, 1);
+                    fetchUnread(e.message.sender_id);
+                }
+                console.log(users.value);
             })
         const fetchUsers = async () => {
             axios.get('/operator/users').then(response => {
                 users.value = response.data;
             });
         }
+        const fetchUnread = async (user) => {
+            axios.get('/operator/user/fetch-unread/'+user).then(response => {
+                users.value.unshift(response.data);
+            });
+        }
         const fetchMessages = async (selectedUser) => {
             document.querySelector('#chatBox').classList.remove('d-none');
-            // console.log(chatUser.value.id,selectedUser.id);
             if(chatUser.value.id != selectedUser.id){
                 chatUser.value = selectedUser;
                 axios.get('/operator/contact-messages/' + selectedUser.id).then(response => {
                     messages.value = response.data;
-                    // console.log(response.data);
                 });
             }
         }
@@ -179,6 +188,11 @@ export default {
         }
         const scrollBottom = () => {
             if (messages.value.length > 1) {
+                axios.get('/operator/read/' + chatUser.value.id).then(response => {
+                    if(document.querySelector('.selected-user > .unread-badge') != null){
+                        document.querySelector('.selected-user > .unread-badge').remove();
+                    }
+                });
                 let el = hasScrolledToBottom.value;
                 el.scrollTop = el.scrollHeight;
             }
@@ -188,6 +202,7 @@ export default {
             messages,
             chatUser,
             newMessage,
+            fetchUnread,
             addMessage,
             fetchMessages,
             showEmoji,

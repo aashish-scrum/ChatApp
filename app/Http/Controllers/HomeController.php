@@ -33,13 +33,14 @@ class HomeController extends Controller
 
     public function chat()
     {
+        // dd(User::withCount('messages','unread_messages')->where('id', '!=', auth('web')->id())->get()->toArray());
         return view('chat');
     }
 
     public function users()
     {
         //    return User::has('messages')->where('id','!=',auth('web')->id())->get();
-        return User::where('id', '!=', auth('web')->id())->get();
+        return User::withCount('messages','unread_messages')->orderBy('unread_messages_count','DESC')->where('id', '!=', auth('web')->id())->get();
     }
 
     public function messages()
@@ -50,6 +51,18 @@ class HomeController extends Controller
     public function contactMessages($receiver)
     {
         return Message::with('receiver', 'sender')->where('sender_id', auth('web')->id())->where('receiver_id', $receiver)->orWhere('sender_id', $receiver)->where('receiver_id', auth('web')->id())->get();
+    }
+
+    public function read($sender)
+    {
+        $messages = Message::where('sender_id', $sender);
+        $messages->where('read',0)->update(['read'=>1]);
+    }
+
+    public function fetchUnread($sender_id)
+    {
+        $user = User::withCount('messages','unread_messages')->find($sender_id);
+        return response()->json($user);
     }
 
     public function messageStore(Request $request)
